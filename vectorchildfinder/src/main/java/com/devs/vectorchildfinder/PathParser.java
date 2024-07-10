@@ -346,6 +346,8 @@ class PathParser {
             float reflectiveCtrlPointX;
             float reflectiveCtrlPointY;
 
+
+
             switch (cmd) {
                 case 'z':
                 case 'Z':
