@@ -36,6 +36,10 @@ public class MainActivity extends AppCompatActivity {
 
         VectorChildFinder vector = new VectorChildFinder(this, R.drawable.map, ivKorea);
 
+
+       // Log.d("TAG", "onCreate: rltdlfmaqusrud");
+
+        //tjdnf
         VectorDrawableCompat.VFullPath seoul = vector.findPathByName("seoul");
         //강원도 18
         VectorDrawableCompat.VFullPath kw_goseong = vector.findPathByName("kw_goseong");
