@@ -1,18 +1,28 @@
 package com.jieun.tour_map_groovy;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.graphics.Color;
+import android.graphics.Path;
+import android.graphics.PathMeasure;
+import android.graphics.RectF;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.devs.vectorchildfinder.VectorChildFinder;
 import com.devs.vectorchildfinder.VectorDrawableCompat;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
 
     VectorDrawableCompat.VFullPath dressPath;
+    String local, visited, color;
+    int visitCnt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,8 +32,9 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView ivKorea = findViewById(R.id.map);
 
-        VectorChildFinder vector = new VectorChildFinder(this, R.drawable.map, ivKorea);
 
+
+        VectorChildFinder vector = new VectorChildFinder(this, R.drawable.map, ivKorea);
 
         VectorDrawableCompat.VFullPath seoul = vector.findPathByName("seoul");
         //강원도 18
@@ -178,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
         VectorDrawableCompat.VFullPath buan = vector.findPathByName("buan");
         VectorDrawableCompat.VFullPath gochang = vector.findPathByName("gochang");
 
-
         //전남 23
         VectorDrawableCompat.VFullPath yeonggwang = vector.findPathByName("yeonggwang");
         VectorDrawableCompat.VFullPath jangseong = vector.findPathByName("jangseong");
@@ -207,7 +217,6 @@ public class MainActivity extends AppCompatActivity {
         VectorDrawableCompat.VFullPath wando3 = vector.findPathByName("wando3");
         VectorDrawableCompat.VFullPath jindo = vector.findPathByName("jindo");
 
-
         //제주
         VectorDrawableCompat.VFullPath jeju = vector.findPathByName("jeju");
 
@@ -216,10 +225,591 @@ public class MainActivity extends AppCompatActivity {
         VectorDrawableCompat.VFullPath kanghwado = vector.findPathByName("kanghwado");
         VectorDrawableCompat.VFullPath yeongjongdo = vector.findPathByName("yeongjongdo");
 
-        jeju.setFillColor(getResources().getColor(android.R.color.holo_red_light));
+        /*
+        String[] colorRand = getResources().getStringArray(R.array.colorRand);
+        Random random = new Random();
+        int n = random.nextInt(colorRand.length-1);
+        color = "R.color." + colorRand[n]+"1";
+        int colorInt = Integer.parseInt(color);*/
+
+        /*int [] colorArray = {R.color.pink, R.color.skyblue, R.color.purple, R.color.yellow};
+        Random random = new Random();
+        int randomColorIndex = random.nextInt(colorArray.length);
+        int randomColorResId = colorArray[randomColorIndex];
+
+        int randomColor = ContextCompat.getColor(MainActivity.this, randomColorResId);
+        Log.d("색","색상 위치" + randomColor);*/
+
+
+        jeju.setFillColor(colorRC());
+
+        Log.d("색칠","색상 위치" + colorRC()+5);
+
+        //jeju.setFillColor(getResources().getColor(randomColorResId));
+        //jeju.setFillColor(R.color.purple5);
+
+        /*ivKorea.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    float x = event.getX();
+                    float y = event.getY();
+
+                    // 터치한 좌표를 기준으로 특정 VFullPath 객체의 영역을 판별하고 처리
+                    if (isPointInsidePath(x, y, visited)) {
+                        // path1에 해당하는 영역을 터치했을 때 처리할 로직
+
+
+                    }
+                }
+                return true;
+            }
+        });*/
+
+        //랜덤 함수 써서 위치 뽑기
+
+        //뽑은 위치에 대한 처리문
+        //근데 방문 했다는 걸 어떻게 인증 할거임? 인증하게 할거임?
+        switch (visited){
+
+            //서울1
+            case "seoul":
+                seoul.setFillColor(colorRC());
+                break;
+
+            //강원도
+            case "kw_goseong" :
+                kw_goseong.setFillColor(colorRC());
+                break;
+            case "sokcho" :
+                sokcho.setFillColor(colorRC());
+                break;
+            case "yangyang":
+                yangyang.setFillColor(colorRC());
+                break;
+
+            case "injae":
+                injae.setFillColor(colorRC());
+                break;
+            case "yanggu" :
+                yanggu.setFillColor(colorRC());
+                break;
+            case "gangneung" :
+                gangneung.setFillColor(colorRC());
+                break;
+            case "donghae" :
+                donghae.setFillColor(colorRC());
+                break;
+            case "samcheok" :
+                samcheok.setFillColor(colorRC());
+                break;
+            case "taebeak" :
+                taebeak.setFillColor(colorRC());
+                break;
+            case "jeongseon" :
+                jeongseon.setFillColor(colorRC());
+                break;
+            case "pyeongchang" :
+                pyeongchang.setFillColor(colorRC());
+                break;
+            case "hongcheon" :
+                hongcheon.setFillColor(colorRC());
+                break;
+            case "hoengseong" :
+                hoengseong.setFillColor(colorRC());
+                break;
+            case "wonju" :
+                wonju.setFillColor(colorRC());
+                break;
+            case "yeongwol" :
+                yeongwol.setFillColor(colorRC());
+                break;
+            case "hwacheon" :
+                hwacheon.setFillColor(colorRC());
+                break;
+            case "cheorwon" :
+                cheorwon.setFillColor(colorRC());
+                break;
+            case "chuncheon" :
+                chuncheon.setFillColor(colorRC());
+                break;
+
+            //경기도
+            case "yeoncheon" :
+                yeoncheon.setFillColor(colorRC());
+                break;
+            case "pocheon" :
+                pocheon.setFillColor(colorRC());
+                break;
+            case "gapyeong" :
+                gapyeong.setFillColor(colorRC());
+                break;
+            case "yangpyeong" :
+                yangpyeong.setFillColor(colorRC());
+                break;
+            case "yeoju" :
+                yeoju.setFillColor(colorRC());
+                break;
+            case "icheon" :
+                icheon.setFillColor(colorRC());
+                break;
+            case "gwangju" :
+                gwangju.setFillColor(colorRC());
+                break;
+            case "namyangju" :
+                namyangju.setFillColor(colorRC());
+                break;
+            case "hanam" :
+                hanam.setFillColor(colorRC());
+                break;
+            case "guli" :
+                guli.setFillColor(colorRC());
+                break;
+            case "uijeongbu" :
+                uijeongbu.setFillColor(colorRC());
+                break;
+            case "yangju" :
+                yangju.setFillColor(colorRC());
+                break;
+            case "dongducheon" :
+                dongducheon.setFillColor(colorRC());
+                break;
+            case "paju" :
+                paju.setFillColor(colorRC());
+                break;
+            case "goyang" :
+                goyang.setFillColor(colorRC());
+                break;
+            case "gimpo" :
+                gimpo.setFillColor(colorRC());
+                break;
+            case "bucheon" :
+                bucheon.setFillColor(colorRC());
+                break;
+            case "gwangmyeong" :
+                gwangmyeong.setFillColor(colorRC());
+                break;
+            case "siheung" :
+                siheung.setFillColor(colorRC());
+                break;
+            case "ansan" :
+                ansan.setFillColor(colorRC());
+                break;
+            case "gunpo" :
+                gunpo.setFillColor(colorRC());
+                break;
+            case "anyang" :
+                anyang.setFillColor(colorRC());
+                break;
+            case "uiwang" :
+                uiwang.setFillColor(colorRC());
+                break;
+            case "gwacheon" :
+                gwacheon.setFillColor(colorRC());
+                break;
+            case "seongnam" :
+                seongnam.setFillColor(colorRC());
+                break;
+            case "suwon" :
+                suwon.setFillColor(colorRC());
+                break;
+            case "hwaseong" :
+                hwaseong.setFillColor(colorRC());
+                break;
+            case "pyeongtaeg" :
+                pyeongtaeg.setFillColor(colorRC());
+                break;
+            case "ansung" :
+                ansung.setFillColor(colorRC());
+                break;
+            case "yongin" :
+                yongin.setFillColor(colorRC());
+                break;
+            case "osan" :
+                osan.setFillColor(colorRC());
+                break;
+
+
+
+            //충북
+            case "danyang" :
+                danyang.setFillColor(colorRC());
+                break;
+            case "jecheon" :
+                jecheon.setFillColor(colorRC());
+                break;
+            case "chungju" :
+                chungju.setFillColor(colorRC());
+                break;
+            case "eumseong" :
+                eumseong.setFillColor(colorRC());
+                break;
+            case "jincheon" :
+                jincheon.setFillColor(colorRC());
+                break;
+            case "goeseong" :
+                goeseong.setFillColor(colorRC());
+                break;
+            case "jeungpyeong" :
+                jeungpyeong.setFillColor(colorRC());
+                break;
+            case "cheongju" :
+                cheongju.setFillColor(colorRC());
+                break;
+            case "boeun" :
+                boeun.setFillColor(colorRC());
+                break;
+            case "ogcheon" :
+                ogcheon.setFillColor(colorRC());
+                break;
+            case "youngdong" :
+                youngdong.setFillColor(colorRC());
+                break;
+            case "daejeon" :
+                daejeon.setFillColor(colorRC());
+                break;
+            case "sejong" :
+                sejong.setFillColor(colorRC());
+                break;
+
+            //충남
+            case "cheonan" :
+                cheonan.setFillColor(colorRC());
+                break;
+            case "asan" :
+                asan.setFillColor(colorRC());
+                break;
+            case "yesan" :
+                yesan.setFillColor(colorRC());
+                break;
+            case "dangjin" :
+                dangjin.setFillColor(colorRC());
+                break;
+            case "seosan" :
+                seosan.setFillColor(colorRC());
+                break;
+            case "taean" :
+                taean1.setFillColor(colorRC());
+                taean2.setFillColor(colorRC());
+                break;
+            case "hongseong" :
+                hongseong.setFillColor(colorRC());
+                break;
+            case "cheongyang" :
+                cheongyang.setFillColor(colorRC());
+                break;
+            case "bolyeong" :
+                bolyeong.setFillColor(colorRC());
+                break;
+            case "buyeo" :
+                buyeo.setFillColor(colorRC());
+                break;
+            case "nonsan" :
+                nonsan.setFillColor(colorRC());
+                break;
+            case "geumsan" :
+                geumsan.setFillColor(colorRC());
+                break;
+            case "seocheon" :
+                seocheon.setFillColor(colorRC());
+                break;
+            case "gyelyong" :
+                gyelyong.setFillColor(colorRC());
+                break;
+            case "gongju" :
+                gongju.setFillColor(colorRC());
+                break;
+
+            //경북
+            case "uljin" :
+                uljin.setFillColor(colorRC());
+                break;
+            case "bonghwa" :
+                bonghwa.setFillColor(colorRC());
+                break;
+            case "youngju" :
+                youngju.setFillColor(colorRC());
+                break;
+            case "yecheon" :
+                yecheon.setFillColor(colorRC());
+                break;
+            case "mungyeong" :
+                mungyeong.setFillColor(colorRC());
+                break;
+            case "sangju" :
+                sangju.setFillColor(colorRC());
+                break;
+            case "andong" :
+                andong.setFillColor(colorRC());
+                break;
+            case "yeongyang" :
+                yeongyang.setFillColor(colorRC());
+                break;
+            case "yeongdeog" :
+                yeongdeog.setFillColor(colorRC());
+                break;
+            case "cheongsong" :
+                cheongsong.setFillColor(colorRC());
+                break;
+            case "pohang" :
+                pohang.setFillColor(colorRC());
+                break;
+            case "gyeongju" :
+                gyeongju.setFillColor(colorRC());
+                break;
+            case "yeongcheon" :
+                yeongcheon.setFillColor(colorRC());
+                break;
+            case "gunwi" :
+                gunwi.setFillColor(colorRC());
+                break;
+            case "uiseong" :
+                uiseong.setFillColor(colorRC());
+                break;
+            case "gumi" :
+                gumi.setFillColor(colorRC());
+                break;
+            case "gincheon" :
+                gincheon.setFillColor(colorRC());
+                break;
+            case "chilgog" :
+                chilgog.setFillColor(colorRC());
+                break;
+            case "seongju" :
+                seongju.setFillColor(colorRC());
+                break;
+            case "golyeong" :
+                golyeong.setFillColor(colorRC());
+                break;
+            case "daegu" :
+                daegu.setFillColor(colorRC());
+                break;
+            case "gyeongsan" :
+                gyeongsan.setFillColor(colorRC());
+                break;
+            case "cheongdo" :
+                cheongdo.setFillColor(colorRC());
+                break;
+
+            //경남
+            case "geochang" :
+                geochang.setFillColor(colorRC());
+                break;
+            case "hamyang" :
+                hamyang.setFillColor(colorRC());
+                break;
+            case "sancheong" :
+                sancheong.setFillColor(colorRC());
+                break;
+            case "habcheon" :
+                habcheon.setFillColor(colorRC());
+                break;
+            case "changnyeong" :
+                changnyeong.setFillColor(colorRC());
+                break;
+            case "milyang" :
+                milyang.setFillColor(colorRC());
+                break;
+            case "ulsan" :
+                ulsan.setFillColor(colorRC());
+                break;
+            case "uilyeong" :
+                uilyeong.setFillColor(colorRC());
+                break;
+            case "haman" :
+                haman.setFillColor(colorRC());
+                break;
+            case "gimhae" :
+                gimhae.setFillColor(colorRC());
+                break;
+            case "busan" :
+                busan.setFillColor(colorRC());
+                break;
+            case "cheongwon" :
+                cheongwon.setFillColor(colorRC());
+                break;
+            case "hadong" :
+                hadong.setFillColor(colorRC());
+                break;
+            case "jinju" :
+                jinju.setFillColor(colorRC());
+                break;
+            case "sacheon" :
+                sacheon.setFillColor(colorRC());
+                break;
+            case "kn_goseong" :
+                kn_goseong.setFillColor(colorRC());
+                break;
+            case "geoje" :
+                geoje.setFillColor(colorRC());
+                break;
+            case "namhae" :
+                namhae.setFillColor(colorRC());
+                break;
+            case "tongyeong" :
+                tongyeong1.setFillColor(colorRC());
+                tongyeong2.setFillColor(colorRC());
+                tongyeong3.setFillColor(colorRC());
+                break;
+            case "yangsan" :
+                yangsan.setFillColor(colorRC());
+                break;
+
+            //전북
+            case "gunsan" :
+                gunsan.setFillColor(colorRC());
+                break;
+            case "igsan" :
+                igsan.setFillColor(colorRC());
+                break;
+            case "wanju" :
+                wanju1.setFillColor(colorRC());
+                wanju2.setFillColor(colorRC());
+                break;
+            case "jinan" :
+                jinan.setFillColor(colorRC());
+                break;
+            case "muju" :
+                muju.setFillColor(colorRC());
+                break;
+            case "jangsu" :
+                jangsu.setFillColor(colorRC());
+                break;
+            case "jeonju" :
+                jeonju.setFillColor(colorRC());
+                break;
+            case "gimjae" :
+                gimjae.setFillColor(colorRC());
+                break;
+            case "imsil" :
+                imsil.setFillColor(colorRC());
+                break;
+            case "namwon" :
+                namwon.setFillColor(colorRC());
+                break;
+            case "sunchang" :
+                sunchang.setFillColor(colorRC());
+                break;
+            case "jeongeub" :
+                jeongeub.setFillColor(colorRC());
+                break;
+            case "buan" :
+                buan.setFillColor(colorRC());
+                break;
+            case "gochang" :
+                gochang.setFillColor(colorRC());
+                break;
+
+                //전남
+            case "yeonggwang" :
+                yeonggwang.setFillColor(colorRC());
+                break;
+            case "jangseong" :
+                jangseong.setFillColor(colorRC());
+                break;
+            case "damyang" :
+                damyang.setFillColor(colorRC());
+                break;
+            case "gogseong" :
+                gogseong.setFillColor(colorRC());
+                break;
+            case "gulye" :
+                gulye.setFillColor(colorRC());
+                break;
+            case "gwangyang" :
+                gwangyang.setFillColor(colorRC());
+                break;
+            case "suncheon" :
+                suncheon.setFillColor(colorRC());
+                break;
+            case "yeosu" :
+                yeosu.setFillColor(colorRC());
+                break;
+            case "goheung" :
+                goheung.setFillColor(colorRC());
+                break;
+            case "boseong" :
+                boseong.setFillColor(colorRC());
+                break;
+            case "hwasun" :
+                hwasun.setFillColor(colorRC());
+                break;
+            case "biggwangju" :
+                biggwangju.setFillColor(colorRC());
+                break;
+            case "hampyeong" :
+                hampyeong.setFillColor(colorRC());
+                break;
+            case "naju" :
+                naju.setFillColor(colorRC());
+                break;
+            case "muan" :
+                muan.setFillColor(colorRC());
+                break;
+            case "sinan1" :
+                sinan1.setFillColor(colorRC());
+                sinan2.setFillColor(colorRC());
+                break;
+            case "mokpo" :
+                mokpo.setFillColor(colorRC());
+                break;
+            case "yeongam" :
+                yeongam.setFillColor(colorRC());
+                break;
+            case "jangheung" :
+                jangheung.setFillColor(colorRC());
+                break;
+            case "gangjin" :
+                gangjin.setFillColor(colorRC());
+                break;
+            case "haenam" :
+                haenam.setFillColor(colorRC());
+                break;
+            case "wando" :
+                wando1.setFillColor(colorRC());
+                wando2.setFillColor(colorRC());
+                wando3.setFillColor(colorRC());
+                break;
+            case "jindo" :
+                jindo.setFillColor(colorRC());
+                break;
+
+                //제주
+            case "jeju" :
+                jeju.setFillColor(colorRC());
+                break;
+
+            case "incheon" :
+                incheon.setFillColor(colorRC());
+                break;
+            case "kanghwado" :
+                kanghwado.setFillColor(colorRC());
+                break;
+            case "yeongjongdo" :
+                yeongjongdo.setFillColor(colorRC());
+                break;
+
+
+
+
+
+        }
+
+
+        //jeju.setFillColor(getResources().getColor(R.color.yellow5));
         //jeju.setFillColor(Color.BLUE);
         //gangwon.setFillColor(Color.GREEN);
 
         ivKorea.invalidate();
+    }
+
+    public int colorRC(){
+        int [] colorArray = {R.color.pink, R.color.skyblue, R.color.purple, R.color.yellow};
+        Random random = new Random();
+        int randomColorIndex = random.nextInt(colorArray.length);
+        int randomColorResId = colorArray[randomColorIndex];
+
+        int randomColor = ContextCompat.getColor(MainActivity.this, randomColorResId);
+        return randomColor;
     }
 }

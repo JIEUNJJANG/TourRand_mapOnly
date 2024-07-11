@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">tour_map_groovy</string>
+    <string-array name="colorRand">
+        <item> skyblue</item>
+        <item> purple</item>
+        <item> yellow</item>
+        <item> pink</item>
+        tour_map_groovy</string-array>
+
 </resources>

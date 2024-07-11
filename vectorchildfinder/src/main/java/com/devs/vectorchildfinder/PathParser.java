@@ -346,15 +346,10 @@ class PathParser {
             float reflectiveCtrlPointX;
             float reflectiveCtrlPointY;
 
-
-
             switch (cmd) {
                 case 'z':
                 case 'Z':
                     path.close();
-                    // Path is closed here, but we need to move the pen to the
-                    // closed position. So we cache the segment's starting position,
-                    // and restore it here.
                     currentX = currentSegmentStartX;
                     currentY = currentSegmentStartY;
                     ctrlPointX = currentSegmentStartX;
@@ -391,15 +386,20 @@ class PathParser {
                     break;
             }
 
+            // 디버그 로그 추가
+            Log.d("addCommand", "Command: " + cmd + ", val.length: " + val.length + ", incr: " + incr + ", path name: " + path);
+
             for (int k = 0; k < val.length; k += incr) {
+                if (k + incr > val.length) {
+                    Log.e("addCommand", "ArrayIndexOutOfBoundsException: Command " + cmd + " expects more parameters.");
+                    return; // 인덱스 초과를 방지하기 위해 루프를 종료합니다.
+                }
+
                 switch (cmd) {
-                    case 'm': // moveto - Start a new sub-path (relative)
+                    case 'm':
                         currentX += val[k + 0];
                         currentY += val[k + 1];
                         if (k > 0) {
-                            // According to the spec, if a moveto is followed by multiple
-                            // pairs of coordinates, the subsequent pairs are treated as
-                            // implicit lineto commands.
                             path.rLineTo(val[k + 0], val[k + 1]);
                         } else {
                             path.rMoveTo(val[k + 0], val[k + 1]);
@@ -407,13 +407,10 @@ class PathParser {
                             currentSegmentStartY = currentY;
                         }
                         break;
-                    case 'M': // moveto - Start a new sub-path
+                    case 'M':
                         currentX = val[k + 0];
                         currentY = val[k + 1];
                         if (k > 0) {
-                            // According to the spec, if a moveto is followed by multiple
-                            // pairs of coordinates, the subsequent pairs are treated as
-                            // implicit lineto commands.
                             path.lineTo(val[k + 0], val[k + 1]);
                         } else {
                             path.moveTo(val[k + 0], val[k + 1]);
@@ -421,154 +418,121 @@ class PathParser {
                             currentSegmentStartY = currentY;
                         }
                         break;
-                    case 'l': // lineto - Draw a line from the current point (relative)
+                    case 'l':
                         path.rLineTo(val[k + 0], val[k + 1]);
                         currentX += val[k + 0];
                         currentY += val[k + 1];
                         break;
-                    case 'L': // lineto - Draw a line from the current point
+                    case 'L':
                         path.lineTo(val[k + 0], val[k + 1]);
                         currentX = val[k + 0];
                         currentY = val[k + 1];
                         break;
-                    case 'h': // horizontal lineto - Draws a horizontal line (relative)
+                    case 'h':
                         path.rLineTo(val[k + 0], 0);
                         currentX += val[k + 0];
                         break;
-                    case 'H': // horizontal lineto - Draws a horizontal line
+                    case 'H':
                         path.lineTo(val[k + 0], currentY);
                         currentX = val[k + 0];
                         break;
-                    case 'v': // vertical lineto - Draws a vertical line from the current point (r)
+                    case 'v':
                         path.rLineTo(0, val[k + 0]);
                         currentY += val[k + 0];
                         break;
-                    case 'V': // vertical lineto - Draws a vertical line from the current point
+                    case 'V':
                         path.lineTo(currentX, val[k + 0]);
                         currentY = val[k + 0];
                         break;
-                    case 'c': // curveto - Draws a cubic Bézier curve (relative)
-                        path.rCubicTo(val[k + 0], val[k + 1], val[k + 2], val[k + 3],
-                                val[k + 4], val[k + 5]);
-
+                    case 'c':
+                        path.rCubicTo(val[k + 0], val[k + 1], val[k + 2], val[k + 3], val[k + 4], val[k + 5]);
                         ctrlPointX = currentX + val[k + 2];
                         ctrlPointY = currentY + val[k + 3];
                         currentX += val[k + 4];
                         currentY += val[k + 5];
-
                         break;
-                    case 'C': // curveto - Draws a cubic Bézier curve
-                        path.cubicTo(val[k + 0], val[k + 1], val[k + 2], val[k + 3],
-                                val[k + 4], val[k + 5]);
+                    case 'C':
+                        path.cubicTo(val[k + 0], val[k + 1], val[k + 2], val[k + 3], val[k + 4], val[k + 5]);
                         currentX = val[k + 4];
                         currentY = val[k + 5];
                         ctrlPointX = val[k + 2];
                         ctrlPointY = val[k + 3];
                         break;
-                    case 's': // smooth curveto - Draws a cubic Bézier curve (reflective cp)
+                    case 's':
                         reflectiveCtrlPointX = 0;
                         reflectiveCtrlPointY = 0;
-                        if (previousCmd == 'c' || previousCmd == 's'
-                                || previousCmd == 'C' || previousCmd == 'S') {
+                        if (previousCmd == 'c' || previousCmd == 's' || previousCmd == 'C' || previousCmd == 'S') {
                             reflectiveCtrlPointX = currentX - ctrlPointX;
                             reflectiveCtrlPointY = currentY - ctrlPointY;
                         }
-                        path.rCubicTo(reflectiveCtrlPointX, reflectiveCtrlPointY,
-                                val[k + 0], val[k + 1],
-                                val[k + 2], val[k + 3]);
-
+                        path.rCubicTo(reflectiveCtrlPointX, reflectiveCtrlPointY, val[k + 0], val[k + 1], val[k + 2], val[k + 3]);
                         ctrlPointX = currentX + val[k + 0];
                         ctrlPointY = currentY + val[k + 1];
                         currentX += val[k + 2];
                         currentY += val[k + 3];
                         break;
-                    case 'S': // shorthand/smooth curveto Draws a cubic Bézier curve(reflective cp)
+                    case 'S':
                         reflectiveCtrlPointX = currentX;
                         reflectiveCtrlPointY = currentY;
-                        if (previousCmd == 'c' || previousCmd == 's'
-                                || previousCmd == 'C' || previousCmd == 'S') {
+                        if (previousCmd == 'c' || previousCmd == 's' || previousCmd == 'C' || previousCmd == 'S') {
                             reflectiveCtrlPointX = 2 * currentX - ctrlPointX;
                             reflectiveCtrlPointY = 2 * currentY - ctrlPointY;
                         }
-                        path.cubicTo(reflectiveCtrlPointX, reflectiveCtrlPointY,
-                                val[k + 0], val[k + 1], val[k + 2], val[k + 3]);
+                        path.cubicTo(reflectiveCtrlPointX, reflectiveCtrlPointY, val[k + 0], val[k + 1], val[k + 2], val[k + 3]);
                         ctrlPointX = val[k + 0];
                         ctrlPointY = val[k + 1];
                         currentX = val[k + 2];
                         currentY = val[k + 3];
                         break;
-                    case 'q': // Draws a quadratic Bézier (relative)
+                    case 'q':
                         path.rQuadTo(val[k + 0], val[k + 1], val[k + 2], val[k + 3]);
                         ctrlPointX = currentX + val[k + 0];
                         ctrlPointY = currentY + val[k + 1];
                         currentX += val[k + 2];
                         currentY += val[k + 3];
                         break;
-                    case 'Q': // Draws a quadratic Bézier
+                    case 'Q':
                         path.quadTo(val[k + 0], val[k + 1], val[k + 2], val[k + 3]);
                         ctrlPointX = val[k + 0];
                         ctrlPointY = val[k + 1];
                         currentX = val[k + 2];
                         currentY = val[k + 3];
                         break;
-                    case 't': // Draws a quadratic Bézier curve(reflective control point)(relative)
+                    case 't':
                         reflectiveCtrlPointX = 0;
                         reflectiveCtrlPointY = 0;
-                        if (previousCmd == 'q' || previousCmd == 't'
-                                || previousCmd == 'Q' || previousCmd == 'T') {
+                        if (previousCmd == 'q' || previousCmd == 't' || previousCmd == 'Q' || previousCmd == 'T') {
                             reflectiveCtrlPointX = currentX - ctrlPointX;
                             reflectiveCtrlPointY = currentY - ctrlPointY;
                         }
-                        path.rQuadTo(reflectiveCtrlPointX, reflectiveCtrlPointY,
-                                val[k + 0], val[k + 1]);
+                        path.rQuadTo(reflectiveCtrlPointX, reflectiveCtrlPointY, val[k + 0], val[k + 1]);
                         ctrlPointX = currentX + reflectiveCtrlPointX;
                         ctrlPointY = currentY + reflectiveCtrlPointY;
                         currentX += val[k + 0];
                         currentY += val[k + 1];
                         break;
-                    case 'T': // Draws a quadratic Bézier curve (reflective control point)
+                    case 'T':
                         reflectiveCtrlPointX = currentX;
                         reflectiveCtrlPointY = currentY;
-                        if (previousCmd == 'q' || previousCmd == 't'
-                                || previousCmd == 'Q' || previousCmd == 'T') {
+                        if (previousCmd == 'q' || previousCmd == 't' || previousCmd == 'Q' || previousCmd == 'T') {
                             reflectiveCtrlPointX = 2 * currentX - ctrlPointX;
                             reflectiveCtrlPointY = 2 * currentY - ctrlPointY;
                         }
-                        path.quadTo(reflectiveCtrlPointX, reflectiveCtrlPointY,
-                                val[k + 0], val[k + 1]);
+                        path.quadTo(reflectiveCtrlPointX, reflectiveCtrlPointY, val[k + 0], val[k + 1]);
                         ctrlPointX = reflectiveCtrlPointX;
                         ctrlPointY = reflectiveCtrlPointY;
                         currentX = val[k + 0];
                         currentY = val[k + 1];
                         break;
-                    case 'a': // Draws an elliptical arc
-                        // (rx ry x-axis-rotation large-arc-flag sweep-flag x y)
-                        drawArc(path,
-                                currentX,
-                                currentY,
-                                val[k + 5] + currentX,
-                                val[k + 6] + currentY,
-                                val[k + 0],
-                                val[k + 1],
-                                val[k + 2],
-                                val[k + 3] != 0,
-                                val[k + 4] != 0);
+                    case 'a':
+                        drawArc(path, currentX, currentY, val[k + 5] + currentX, val[k + 6] + currentY, val[k + 0], val[k + 1], val[k + 2], val[k + 3] != 0, val[k + 4] != 0);
                         currentX += val[k + 5];
                         currentY += val[k + 6];
                         ctrlPointX = currentX;
                         ctrlPointY = currentY;
                         break;
-                    case 'A': // Draws an elliptical arc
-                        drawArc(path,
-                                currentX,
-                                currentY,
-                                val[k + 5],
-                                val[k + 6],
-                                val[k + 0],
-                                val[k + 1],
-                                val[k + 2],
-                                val[k + 3] != 0,
-                                val[k + 4] != 0);
+                    case 'A':
+                        drawArc(path, currentX, currentY, val[k + 5], val[k + 6], val[k + 0], val[k + 1], val[k + 2], val[k + 3] != 0, val[k + 4] != 0);
                         currentX = val[k + 5];
                         currentY = val[k + 6];
                         ctrlPointX = currentX;
@@ -578,7 +542,6 @@ class PathParser {
                 previousCmd = cmd;
             }
 
-
             current[0] = currentX;
             current[1] = currentY;
             current[2] = ctrlPointX;
@@ -587,10 +550,7 @@ class PathParser {
             current[5] = currentSegmentStartY;
         }
 
-
-
-
-        private static void drawArc(Path p,
+       private static void drawArc(Path p,
                                     float x0,
                                     float y0,
                                     float x1,
